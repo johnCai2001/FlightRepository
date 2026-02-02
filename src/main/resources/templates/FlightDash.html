@@ -1,32 +1,64 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Flight Dashboard</title>
+    <title>Flight Project</title>
+
     <style>
         body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             font-family: Arial, Helvetica, sans-serif;
-            margin: 24px;
-            background-color: #f5f5f5;
+            color: #fff;
         }
 
-        header {
-            margin-bottom: 16px;
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 48px 64px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        main {
-            background: #ffffff;
-            padding: 16px;
-            border: 1px solid #ddd;
+        .card h1 {
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+        }
+
+        .enter-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #00c6ff;
+            background: linear-gradient(to right, #0072ff, #00c6ff);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 24px;
+            font-size: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
     </style>
 </head>
-
 <body>
 
-<header>
-	
-	
-    <h1> Weccome To Flight Performance Dashboard</h1>
-	<a th:href ="@{/Login}">進入導航畫面</a>
+<div class="card">
+    <h1>✈ Flight Dashboard</h1>
+    <p>Flight Data Visualization Project</p>
+    <br>
+    <a class="enter-btn" th:href="@{/dashboard}">
+        進入主頁
+    </a>
+</div>
+
+</body>
+</html>
+
 
