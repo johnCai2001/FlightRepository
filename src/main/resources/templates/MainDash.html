@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+	<title>MainDash - Phase 1</title>
 <head>
   <meta charset="UTF-8" />
+  <!--頁面在不同裝置時縮放正常-->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MainDash - Phase 1</title>
-
-  <!-- Leaflet CSS -->
+  <title>MainDash </title> 
+ <!-- 引入框架Leaflet CSS(Leaflet用CSS跑) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
@@ -26,37 +27,147 @@
 
 <body>
   <header>
-    <h1>✈️ Flight Main Dashboard (Phase 1)</h1>
+    <h1>✈️ Flight Main Dashboard </h1>
   </header>
 
   <main>
-    <!-- 核心：地圖容器 -->
+    <!-- 宣告地圖讓 LeafLet去渲染-->
     <div id="map"></div>
   </main>
 
-  <!-- Leaflet JS -->
+  <!-- 插入前端框架Leaflet 利用JS去跑 -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    // 桃園機場附近
+    //地圖中心經緯度(桃園機場)
+	//[緯度,經度]
     const center = [25.0777, 121.2328];
 
-    // 初始化地圖
+    // 設定中心點與縮放等級
     const map = L.map("map").setView(center, 10);
 
-    // OSM 圖層
+    // OSM(OpenStreetMap) 
+	//s = 伺服器的子網域(預設的)
+	//{Z:放大層級]{X:左到右的第幾張}{Y:上到下的第幾張}
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		//OpenStreetMap 有規定使用者 一定要標示版權
       attribution: "&copy; OpenStreetMap contributors",
       maxZoom: 19
     }).addTo(map);
 
     // 測試 marker
     L.marker(center)
-      .addTo(map)
-      .bindPopup("Taoyuan Airport ✈️")
+    //marker插到地圖上 
+	 .addTo(map)
+	 //彈出框
+      .bindPopup("Taoyuan Airport ")
+	  //自動打開maeker
       .openPopup();
   </script>
 </body>
 </html>
 t>
+
+<head>
+  <title>MainDash - Phase 2</title>
+
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { margin: 0; font-size: 18px; }
+    .hint { font-size: 12px; color: #666; }
+    main { height: calc(100vh - 49px); }
+    #map { height: 100%; width: 100%; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>✈️ Flight Main Dashboard </h1>
+    <div class="hint">假資料：多台飛機 marker + 航向旋轉 + popup 資訊</div>
+  </header>
+
+  <main>
+    <div id="map"></div>
+  </main>
+  
+  <script>
+  
+    // Phase 2：假飛機資料（之後會換成 ADS-B API 回傳）
+    
+	// heading: 0~360，0=北、90=東
+    const fakeFlights = [
+      { callsign: "EVA001", lat: 25.10, lon: 121.30, alt: 32000, spd: 450, heading: 85 },
+      { callsign: "CAL812", lat: 24.95, lon: 121.05, alt: 28000, spd: 410, heading: 40 },
+      { callsign: "JAL809", lat: 25.25, lon: 121.15, alt: 36000, spd: 480, heading: 120 },
+      { callsign: "UAE367", lat: 24.85, lon: 121.35, alt: 30000, spd: 430, heading: 300 }
+    ];
+
+    // 3) 做一個「飛機 icon」：用 divIcon + CSS 旋轉（最輕量，不用外部圖檔）
+    function createPlaneIcon(heading) {
+      return L.divIcon({
+        className: "",
+        html: `
+          <div style="
+            transform: rotate(${heading}deg);
+            width: 24px; height: 24px;
+            display: grid; place-items: center;
+            font-size: 18px;
+            text-shadow: 0 0 2px rgba(0,0,0,0.25);
+          ">✈️</div>
+        `,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+      });
+    }
+
+    // 4) 把假飛機畫到地圖上
+    const markers = [];
+
+    for (const f of fakeFlights) {
+      const marker = L.marker([f.lat, f.lon], { icon: createPlaneIcon(f.heading) }).addTo(map);
+
+      marker.bindPopup(`
+        <div style="min-width:180px">
+          <div style="font-weight:bold; font-size:14px;">${f.callsign}</div>
+          <div>Altitude: ${f.alt.toLocaleString()} ft</div>
+          <div>Speed: ${f.spd} kt</div>
+          <div>Heading: ${f.heading}°</div>
+        </div>
+      `);
+
+      markers.push({ marker, data: f });
+    }
+
+    // 5) （可選）假裝飛機在動：每 1 秒更新一次位置與航向
+    // 讓你 Phase 2 就能展示「動態 tracking」的雛形
+    setInterval(() => {
+      for (const m of markers) {
+        // 小幅度移動
+        m.data.lat += (Math.random() - 0.5) * 0.02;
+        m.data.lon += (Math.random() - 0.5) * 0.02;
+
+        // 小幅度改 heading
+        m.data.heading = (m.data.heading + (Math.random() - 0.5) * 15 + 360) % 360;
+
+        // 更新 marker
+        m.marker.setLatLng([m.data.lat, m.data.lon]);
+        m.marker.setIcon(createPlaneIcon(m.data.heading));
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
+
 
