@@ -1,109 +1,62 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <title>Flight Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 24px;
-            background-color: #f5f5f5;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MainDash - Phase 1</title>
 
-        header {
-            margin-bottom: 16px;
-        }
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-        main {
-            background: #ffffff;
-            padding: 16px;
-            border: 1px solid #ddd;
-        }
-    </style>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    header h1 { margin: 0; font-size: 18px; }
+    main { height: calc(100vh - 49px); } /* header 高度大概 49px */
+    #map { height: 100%; width: 100%; }
+  </style>
 </head>
 
 <body>
-<h2>Hi</h2>
-<header>
-	<!DOCTYPE html>
-	<html lang="zh-Hant">
-	<head>
-	    <meta charset="UTF-8">
-	    <title>Main Dashboard</title>
-		<!--地圖需要容器-->
-	    <!-- LeLeaflet CSSaflet CSS -->
-	    <link
-	      rel="stylesheet"
-	      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-	    />
+  <header>
+    <h1>✈️ Flight Main Dashboard (Phase 1)</h1>
+  </header>
 
-	    <style>
-	        body {
-	            margin: 0;
-	            font-family: Arial, Helvetica, sans-serif;
-	            background-color: #f0f2f5;
-	        }
+  <main>
+    <!-- 核心：地圖容器 -->
+    <div id="map"></div>
+  </main>
 
-	        header {
-	            height: 60px;
-	            padding: 0 20px;
-	            background-color: #1f2937;
-	            color: white;
-	            display: flex;
-	            align-items: center;
-	        }
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-	        main {
-	            display: flex;
-	            height: calc(100vh - 60px); /* 桌機滿版 */
-	        }
+  <script>
+    // 桃園機場附近
+    const center = [25.0777, 121.2328];
 
-	        /* 地圖容器（重點） */
-	        #map {
-	            flex: 1;
-	            background-color: #ddd;
-	        }
+    // 初始化地圖
+    const map = L.map("map").setView(center, 10);
 
-	        /* 右側資訊欄（之後用） */
-	        aside {
-	            width: 320px;
-	            border-left: 1px solid #ccc;
-	            background-color: #ffffff;
-	            padding: 12px;
-	        }
-	    </style>
-	</head>
+    // OSM 圖層
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+      maxZoom: 19
+    }).addTo(map);
 
-	<body>
+    // 測試 marker
+    L.marker(center)
+      .addTo(map)
+      .bindPopup("Taoyuan Airport ✈️")
+      .openPopup();
+  </script>
+</body>
+</html>
+t>
 
-	<header>
-	    <h2>✈ Flight Dashboard</h2>
-	</header>
-
-	<main>
-	    <!-- 地圖 -->
-	    <div id="map"></div>
-
-	    <!-- 右側面板（現在先留空） -->
-	    <aside>
-	        <p>Flight Info Panel</p>
-	    </aside>
-	</main>
-
-	<!-- Leaflet JS（放 body 最下面） -->
-	<script
-	  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-	</script>
-
-	<script>
-	    // 初始化地圖（桃園機場附近）
-	    const map = L.map('map').setView([25.077, 121.232], 10);
-
-	    // 底圖
-	    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	        maxZoom: 18
-	    }).addTo(map);
-	</script>
-
-	</body>
-	</html>
