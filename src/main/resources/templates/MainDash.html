@@ -114,11 +114,14 @@ t>
       { callsign: "UAE367", lat: 24.85, lon: 121.35, alt: 30000, spd: 430, heading: 300 }
     ];
 
-    // 3) 做一個「飛機 icon」：用 divIcon + CSS 旋轉（最輕量，不用外部圖檔）
+    // 做一個「飛機 icon」：用 divIcon + CSS 旋轉
     function createPlaneIcon(heading) {
+		//divIcon用一段 HTML 當作 marker 的圖示
       return L.divIcon({
+		//不套 Leaflet 預設 icon 樣式使用html的樣式
         className: "",
-        html: `
+        //飛機圖示大小規格
+		html: `
           <div style="
             transform: rotate(${heading}deg);
             width: 24px; height: 24px;
@@ -126,13 +129,14 @@ t>
             font-size: 18px;
             text-shadow: 0 0 2px rgba(0,0,0,0.25);
           ">✈️</div>
-        `,
+        `  ,
         iconSize: [24, 24],
         iconAnchor: [12, 12]
       });
     }
+	//最後return 回去給divIcon
 
-    // 4) 把假飛機畫到地圖上
+    //把假飛機畫到地圖上
     const markers = [];
 
     for (const f of fakeFlights) {
@@ -150,15 +154,14 @@ t>
       markers.push({ marker, data: f });
     }
 
-    // 5) （可選）假裝飛機在動：每 1 秒更新一次位置與航向
-    // 讓你 Phase 2 就能展示「動態 tracking」的雛形
+    // 假裝飛機在動：每 1 秒更新一次位置與航向
     setInterval(() => {
       for (const m of markers) {
-        // 小幅度移動
+        // 位置移動
         m.data.lat += (Math.random() - 0.5) * 0.02;
         m.data.lon += (Math.random() - 0.5) * 0.02;
 
-        // 小幅度改 heading
+        // 航向改變 heading
         m.data.heading = (m.data.heading + (Math.random() - 0.5) * 15 + 360) % 360;
 
         // 更新 marker

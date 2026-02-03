@@ -4,18 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class FlightStateDto {
-	   private double lon;      
-	    private int heading;     
-	    private int altitude;    
+	
+	    public FlightStateDto(String string, double d, double e, int i, int j, int k) {
+		// TODO Auto-generated constructor stub
+	}
+
+		private String flightNum;
+	   
+	    private double lat;
+	    
+	    private double lon;
+	    
+	    private int heading;
+	    
+	    private int altitude;
+	    
 	    private int speed;
-		public FlightStateDto() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-	    
-	    
+		
 }
