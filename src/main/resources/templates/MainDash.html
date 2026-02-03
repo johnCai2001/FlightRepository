@@ -114,7 +114,59 @@
     const flightInfoEl = document.getElementById("flightInfo");
     let selectedFlightNum = null;
 
-    const markerMap = new Map();
+	// 前端的 API 資料狀態管理
+
+	const markerMap = new Map();
+
+	// 從後端拿最新世界狀態
+	//async非同步處理函數
+	  async function loadFlights() {
+	  const res = await fetch(API_URL);
+	  const flights = await res.json();
+
+	  //用來記錄API有出現哪些 flights
+	  const seen = new Set();
+
+	  
+	  
+	  for (const f of flights) {
+	    seen.add(f.flightNum);
+
+	    // CREATE：第一次看到這架飛機
+	    if (!markerMap.has(f.flightNum)) {
+			 const marker = L.marker(
+	        [f.lat, f.lon],
+	        { icon: createPlaneIcon(f.heading) }
+	      ).addTo(map);
+
+	      marker.on("click", () => {
+	        selectedFlightNum = f.flightNum;
+	        renderFlightCard(f);
+	      });
+
+	      markerMap.set(f.flightNum, marker);
+	    }
+	    // UPDATE：同一架飛機，只更新狀態
+	    else {
+		  const marker = markerMap.get(f.flightNum);
+	      marker.setLatLng([f.lat, f.lon]);
+	      marker.setIcon(createPlaneIcon(f.heading));
+	    }
+
+	    // 若目前被選中，資訊卡同步更新
+	    if (selectedFlightNum === f.flightNum) {
+	      renderFlightCard(f);
+	    }
+	  }
+
+	  // DELETE：這次 API 沒回來的飛機 → 移除
+	  for (const [flightNum, marker] of markerMap.entries()) {
+	    if (!seen.has(flightNum)) {
+	      map.removeLayer(marker);
+	      markerMap.delete(flightNum);
+	    }
+	  }
+	}
 
     //飛機 icon
     function createPlaneIcon(heading) {
@@ -186,7 +238,9 @@
 
             markerMap.set(f.flightNum, marker);
           }
-          //舊飛機
+          
+		  
+		  
           else {
             const marker = markerMap.get(f.flightNum);
             marker.setLatLng([Number(f.lat), Number(f.lon)]);
@@ -198,7 +252,7 @@
           }
         }
 
-        //移除消失的飛機
+        //移除是野外的飛機
         for (const [flightNum, marker] of markerMap.entries()) {
           if (!seen.has(flightNum)) {
             map.removeLayer(marker);
@@ -213,7 +267,7 @@
         }
 
       } catch (e) {
-        console.error("❌ loadFlights error:", e);
+        console.error(" loadFlights error:", e);
       }
     }
 	
