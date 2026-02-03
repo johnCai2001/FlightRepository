@@ -11,7 +11,6 @@ import com.example.dto.FlightStateDto;
 import com.example.service.FlightService;
 
 @RestController
-
 @RequestMapping("/api/flight")
 
 public class FlightAPIController {
