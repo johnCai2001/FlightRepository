@@ -259,7 +259,22 @@
       }
     }
 
-    // 先跑一次 + 之後每 1秒更新
-    loadFlights();
-    setInterval(loadFlights, 1000);
+	//3-5更新位置優化
+	let isLoading = false;
+
+	async function loadFlightsSafe() {
+	  if (isLoading) return;   // 還在跑就不要重複進來
+	  isLoading = true;
+
+	  try {
+	    await loadFlights();   // ✅ 呼叫你原本的
+	  } finally {
+	    isLoading = false;
+	  }
+	}
+	loadFlightsSafe();
+	setInterval(loadFlightsSafe, 3000);
+	
+	</script>
+
   </script>
