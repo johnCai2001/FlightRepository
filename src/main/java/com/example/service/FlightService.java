@@ -65,10 +65,6 @@ public class FlightService {
             // 8) 更新位置
             f.setLat(f.getLat() + dLatDeg);
             f.setLon(f.getLon() + dLonDeg);
-
-            // （可選）加一點高度/速度微幅波動，像真實航跡
-            // f.setAltitude(f.getAltitude() + (random.nextInt(41) - 20)); // -20~+20 ft
-            // f.setSpeed(f.getSpeed() + (random.nextInt(3) - 1));         // -1~+1 knot
         }
     }
 
