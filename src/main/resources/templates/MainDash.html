@@ -10,7 +10,7 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
   />
-
+<!--Map CSS-->
   <style>
     body {
       margin: 0;
@@ -77,52 +77,106 @@
   
   <!--航班列表CSS-->
 <style>
+	/* ===== 整體版面 ===== */
 	.layout{
-		  display:grid;
-		  grid-template-columns: 360px 1fr 320px;
-		  gap: 12px;
-		  padding: 12px;
-		}
-		#map{
-		  height: calc(100vh - 120px);
-		  min-height: 600px;
-		  border: 1px solid #ddd;
-		  border-radius: 10px;
-		}
-		.panel{
-		  border:1px solid #ddd;
-		  border-radius:10px;
-		  background:#fff;
-		  padding:10px;
-		  overflow:hidden;
-		}
-		.tableWrap{
-		  overflow:auto;
-		  max-height: calc(100vh - 190px);
-		  border:1px solid #eee;
-		  border-radius: 8px;
-		}
-		.flightTable{
-		  width:100%;
-		  border-collapse: collapse;
-		  font-size: 13px;
-		}
-		.flightTable th, .flightTable td{
-		  padding: 8px 8px;
-		  border-bottom: 1px solid #eee;
-		  white-space: nowrap;
-		}
-		.flightTable tbody tr{
-		  cursor: pointer;
-		}
-		.flightTable tbody tr:hover{
-		  background: #f6f8ff;
-		}
-		.flightTable tbody tr.active{
-		  background: #e9f0ff;
-		  font-weight: 700;
-		}
-		.muted{ color:#666; }
+	  display:grid;
+	  grid-template-columns: 320px 1fr 300px;
+	  gap: 12px;
+	  padding: 12px;
+	}
+
+	#map{
+	  height: calc(100vh - 120px);
+	  min-height: 600px;
+	  border: 1px solid #ddd;
+	  border-radius: 8px;
+	}
+
+	/* ===== Panel（保留給其他用） ===== */
+	.panel{
+	  border:1px solid #ddd;
+	  border-radius:8px;
+	  background:#fff;
+	  padding:8px;
+	  overflow:hidden;
+	}
+
+	/* ===== Flights 專用：input 等級外框 ===== */
+	.flights-panel{
+	  border:1px solid #ccc;
+	  border-radius:6px;
+	  background:#fff;
+	  padding:6px;
+	}
+
+	/* Flights 標題 */
+	.flights-panel h3{
+	  margin: 0 0 6px;
+	  font-size: 16px;
+	}
+
+	/* Search input（跟外框同等級） */
+	#flightSearch{
+	  width:100%;
+	  box-sizing:border-box;
+	  border:1px solid #ccc;
+	  border-radius:6px;
+	  font-size:13px;
+	  padding:5px 8px;
+	  margin-bottom:6px;
+	}
+
+	/* ===== FlightNumbers 外框（跟 input 一樣） ===== */
+	.tableWrap{
+	  border:1px solid #ccc;
+	  border-radius:6px;
+	  padding:0;
+	  max-height: calc(100vh - 240px);
+	  overflow:auto;
+	}
+
+	/* ===== 航班列表本體 ===== */
+	.flightTable{
+	  width:100%;
+	  border-collapse:collapse;
+	  font-size:12px;
+	  line-height:1.2;
+	}
+
+	.flightTable th,
+	.flightTable td{
+	  padding:4px 6px;
+	  border-bottom:1px solid #eee;
+	  white-space:nowrap;
+	}
+
+	.flightTable th{
+	  position:sticky;
+	  top:0;
+	  background:#fff;
+	  font-weight:600;
+	  z-index:1;
+	}
+
+	.flightTable tbody tr{
+	  cursor:pointer;
+	}
+
+	.flightTable tbody tr:hover{
+	  background:#f5f8ff;
+	}
+
+	.flightTable tbody tr.active{
+	  background:#e3edff;
+	  font-weight:600;
+	}
+
+	/* 小字 */
+	.muted{
+	  color:#666;
+	  font-size:12px;
+	}
+
   </style>
 </head>
 
@@ -134,23 +188,19 @@
     <div class="muted">Phase 3-2：後端 API → 地圖 marker</div>
   </header>
    
-  <!-- 4-1航班列表 -->
+  
+  <!--航班列表 -->
   <main class="layout">
     <section class="panel" id="flightPanel">
       <h3>Flights</h3>
 
-      <input id="flightSearch" placeholder="Search flightNum (Phase 4-2 才啟用)" disabled />
+      <input id="flightSearch" placeholder="Search flightNum" disabled />
 
       <div class="tableWrap">
         <table class="flightTable">
           <thead>
             <tr>
-              <th>Flight</th>
-              <th>Alt</th>
-              <th>Speed</th>
-              <th>Head</th>
-              <th>Lat</th>
-              <th>Lon</th>
+              <th>FlightNumbers</th>
             </tr>
           </thead>
           <tbody id="flightTbody">
@@ -160,28 +210,12 @@
       </div>
     </section>
 
-    <!-- 地圖 -->
     <section id="map"></section>
 
-    <!-- 右側資訊卡（你原本就有） -->
     <aside class="card" id="flightCard">
       <h3>Selected Flight</h3>
       <div id="flightInfo" class="muted">Click a marker on the map.</div>
     </aside>
-
-	
-    <!-- 地圖 -->
-    <div id="map"></div>
-
-    <!-- 右側資訊卡 -->
-    <aside>
-      <h3>Selected Flight</h3>
-      <div id="flightInfo" class="muted">
-        Click a plane marker on the map.
-      </div>
-    </aside>
-  </main>
-
   
   
   <!-- Leaflet JS -->
@@ -237,7 +271,6 @@
       `;
     }
 
-    // ===== 3-5=====
     const lastPosMap = new Map();
     const animMap = new Map();
 
