@@ -108,7 +108,7 @@
     // 串接後端 API
     const API_URL = "/api/flight";
 
-    //去文件中去取得<div>中的flightinfo，預設值為0(尚未被點擊)
+    //去文件中去取得<div>中的flightinfo，預設值為(0))
     const flightInfoEl = document.getElementById("flightInfo");
     let selectedFlightNum = null;
 
@@ -145,7 +145,54 @@
       `;
     }
 
-    // 載入 + 更新飛機
+    // ===== 3-5=====
+    const lastPosMap = new Map();
+    const animMap = new Map();
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function lerpAngle(a, b, t) {
+      let diff = ((b - a + 540) % 360) - 180;
+      return (a + diff * t + 360) % 360;
+    }
+
+    function smoothMoveMarker(key, marker, toLat, toLon, toHeading, duration = 900) {
+      const from = lastPosMap.get(key) || {
+        lat: marker.getLatLng().lat,
+        lon: marker.getLatLng().lng,
+        heading: 0
+      };
+
+      if (animMap.has(key)) cancelAnimationFrame(animMap.get(key));
+
+      const start = performance.now();
+
+      function step(now) {
+        const t = Math.min(1, (now - start) / duration);
+
+        const lat = lerp(from.lat, toLat, t);
+        const lon = lerp(from.lon, toLon, t);
+        const heading = lerpAngle(from.heading, toHeading, t);
+
+        marker.setLatLng([lat, lon]);
+        marker.setIcon(createPlaneIcon(heading));
+
+        if (t < 1) {
+          const id = requestAnimationFrame(step);
+          animMap.set(key, id);
+        } else {
+          animMap.delete(key);
+          lastPosMap.set(key, { lat: toLat, lon: toLon, heading: toHeading });
+        }
+      }
+
+      const id = requestAnimationFrame(step);
+      animMap.set(key, id);
+    }
+
+    // ===== 載入 + 更新飛機 =====
     async function loadFlights() {
       try {
         const res = await fetch(API_URL);
@@ -179,20 +226,23 @@
             });
 
             markerMap.set(key, marker);
+            lastPosMap.set(key, { lat, lon, heading });
           } else {
             // UPDATE
             const marker = markerMap.get(key);
-            marker.setLatLng([lat, lon]);
-            marker.setIcon(createPlaneIcon(heading));
+            smoothMoveMarker(key, marker, lat, lon, heading);
           }
 
-          // 卡片同步
           if (selectedFlightNum === key) renderFlightCard(f);
         }
 
         // DELETE
         for (const [key, marker] of markerMap.entries()) {
           if (!seen.has(key)) {
+            if (animMap.has(key)) cancelAnimationFrame(animMap.get(key));
+            animMap.delete(key);
+            lastPosMap.delete(key);
+
             map.removeLayer(marker);
             markerMap.delete(key);
           }
@@ -209,7 +259,7 @@
       }
     }
 
-    // 先跑一次 + 之後每 3 秒更新
+    // 先跑一次 + 之後每 1秒更新
     loadFlights();
-    setInterval(loadFlights, 3000);
+    setInterval(loadFlights, 1000);
   </script>
