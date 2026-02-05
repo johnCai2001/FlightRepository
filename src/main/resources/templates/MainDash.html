@@ -77,7 +77,7 @@
   
   <!--航班列表CSS-->
 <style>
-	/* ===== 整體版面 ===== */
+
 	.layout{
 	  display:grid;
 	  grid-template-columns: 320px 1fr 300px;
@@ -92,7 +92,6 @@
 	  border-radius: 8px;
 	}
 
-	/* ===== Panel（保留給其他用） ===== */
 	.panel{
 	  border:1px solid #ddd;
 	  border-radius:8px;
@@ -101,7 +100,6 @@
 	  overflow:hidden;
 	}
 
-	/* ===== Flights 專用：input 等級外框 ===== */
 	.flights-panel{
 	  border:1px solid #ccc;
 	  border-radius:6px;
@@ -109,13 +107,11 @@
 	  padding:6px;
 	}
 
-	/* Flights 標題 */
 	.flights-panel h3{
 	  margin: 0 0 6px;
 	  font-size: 16px;
 	}
 
-	/* Search input（跟外框同等級） */
 	#flightSearch{
 	  width:100%;
 	  box-sizing:border-box;
@@ -126,7 +122,6 @@
 	  margin-bottom:6px;
 	}
 
-	/* ===== FlightNumbers 外框（跟 input 一樣） ===== */
 	.tableWrap{
 	  border:1px solid #ccc;
 	  border-radius:6px;
@@ -170,8 +165,6 @@
 	  background:#e3edff;
 	  font-weight:600;
 	}
-
-	/* 小字 */
 	.muted{
 	  color:#666;
 	  font-size:12px;
@@ -196,18 +189,21 @@
 
       <input id="flightSearch" placeholder="Search flightNum" disabled />
 
-      <div class="tableWrap">
-        <table class="flightTable">
-          <thead>
-            <tr>
-              <th>FlightNumbers</th>
-            </tr>
-          </thead>
-          <tbody id="flightTbody">
-            <!-- JS 動態塞 -->
-          </tbody>
-        </table>
-      </div>
+	  <!--航班號表-->	  
+	  <div class="tableWrap">
+	    <table class="flightTable">
+			<thead>
+	        <tr>
+	          <th>Flight Number</th>
+	        </tr>
+	      </thead>
+		  <tbody>
+		    <tr th:each="f : ${flightNumbers}">
+		      <td th:text="${f}"></td>
+		    </tr>
+		  </tbody>
+	    </table>
+	  </div>	 		  
     </section>
 
     <section id="map"></section>
