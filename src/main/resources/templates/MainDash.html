@@ -168,7 +168,7 @@
 	.muted{
 	  color:#666;
 	  font-size:12px;
-	}
+	}	
 
   </style>
 </head>
@@ -264,13 +264,14 @@
 
 	function renderSelectedFlight(f) {
 	  flightInfoEl.innerHTML = `
-	    <div><b>Flight:</b> ${f.flightNum}</div>
-	    <div><b>Altitude:</b> ${f.alt}</div>
-	    <div><b>Speed:</b> ${f.speed}</div>
-	    <div><b>Heading:</b> ${f.heading}</div>
-	    <div><b>Lat/Lon:</b> ${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}</div>
+	  <div class="row"><div class="k">Flight</div><div class="v">${f.flightNum}</div></div>
+	        <div class="row"><div class="k">Lat</div><div class="v">${Number(f.lat).toFixed(4)}</div></div>
+	        <div class="row"><div class="k">Lon</div><div class="v">${Number(f.lon).toFixed(4)}</div></div>
+	        <div class="row"><div class="k">Heading</div><div class="v">${f.heading}°</div></div>
+	        <div class="row"><div class="k">Altitude</div><div class="v">${f.altitude} ft</div></div>
+	        <div class="row"><div class="k">Speed</div><div class="v">${f.speed} kts</div></div>
 	  `;
-	}
+	  }
    //==================================================================================
     //去文件中去取得<div>中的flightinfo，預設值為(0))
     const flightInfoEl = document.getElementById("flightInfo");
