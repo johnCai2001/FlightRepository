@@ -199,7 +199,13 @@
 	      </thead>
 		  <tbody>
 		    <tr th:each="f : ${flightNumbers}">
-		      <td th:text="${f}"></td>
+				<td>
+				 <button type="button"
+				              class="flightBtn"
+				              th:attr="data-flightnum=${f}"
+				              th:text="${f}">
+				      </button>
+				    </td>
 		    </tr>
 		  </tbody>
 	    </table>
@@ -227,7 +233,45 @@
 
     // 串接後端 API
     const API_URL = "/api/flight";
+	
+	// =====================點航班按鈕：事件委派（不用每顆都綁）===========================
+	document.addEventListener("click", async (e) => {
+	  const btn = e.target.closest(".flightBtn");
+	  if (!btn) return;
 
+	  const flightNum = btn.dataset.flightnum;
+	  if (!flightNum) return;
+
+	  selectedFlightNum = flightNum;
+
+	  // 1) 拉最新 flights
+	  const res = await fetch(API_URL);
+	  const flights = await res.json();
+
+	  // 2) 找到被點的那台
+	  const f = flights.find(x => x.flightNum === flightNum);
+	  if (!f) {
+	    flightInfoEl.textContent = `找不到 ${flightNum}（可能剛好不在資料裡）`;
+	    return;
+	  }
+
+	  // 3) 更新右側卡片
+	  renderSelectedFlight(f);
+
+	  // 4) （可選）地圖定位/高亮：如果你有 markerMap 就能做
+	  focusFlightOnMap(flightNum);
+	});
+
+	function renderSelectedFlight(f) {
+	  flightInfoEl.innerHTML = `
+	    <div><b>Flight:</b> ${f.flightNum}</div>
+	    <div><b>Altitude:</b> ${f.alt}</div>
+	    <div><b>Speed:</b> ${f.speed}</div>
+	    <div><b>Heading:</b> ${f.heading}</div>
+	    <div><b>Lat/Lon:</b> ${Number(f.lat).toFixed(4)}, ${Number(f.lon).toFixed(4)}</div>
+	  `;
+	}
+   //==================================================================================
     //去文件中去取得<div>中的flightinfo，預設值為(0))
     const flightInfoEl = document.getElementById("flightInfo");
     let selectedFlightNum = null;
