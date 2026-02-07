@@ -187,7 +187,9 @@
     <section class="panel" id="flightPanel">
       <h3>Flights</h3>
 
-      <input id="flightSearch" placeholder="Search flightNum" disabled />
+      <input id="flightSearch" placeholder="Search FlightNumber">
+	  
+	  <div id="flightList"></div>
 
 	  <!--航班號表-->	  
 	  <div class="tableWrap">
@@ -204,8 +206,8 @@
 				              class="flightBtn"
 				              th:attr="data-flightnum=${f}"
 				              th:text="${f}">
-				      </button>
-				    </td>
+				   </button>
+				 </td>
 		    </tr>
 		  </tbody>
 	    </table>
@@ -234,7 +236,7 @@
     // 串接後端 API
     const API_URL = "/api/flight";
 	
-	// =====================點航班按鈕：事件委派（不用每顆都綁）===========================
+	// ================================點航班按鈕============================================
 	document.addEventListener("click", async (e) => {
 	  const btn = e.target.closest(".flightBtn");
 	  if (!btn) return;
@@ -255,10 +257,8 @@
 	    return;
 	  }
 
-	  // 3) 更新右側卡片
 	  renderSelectedFlight(f);
 
-	  // 4) （可選）地圖定位/高亮：如果你有 markerMap 就能做
 	  focusFlightOnMap(flightNum);
 	});
 
@@ -278,11 +278,10 @@
     let selectedFlightNum = null;
 
     const markerMap = new Map();
-	//動態表
 	const animStateMap = new Map();
     let didFitBounds = false;
 
-    // 建立飛機 icon
+    // =======================================建立飛機======================================
     function createPlaneIcon(heading) {
       return L.divIcon({
         className: "",
@@ -299,7 +298,7 @@
       });
     }
 
-    // 更新右側資訊卡
+    // =================================更新右側資訊卡=====================================
     function renderFlightCard(f) {
       if (!flightInfoEl) return;
       flightInfoEl.innerHTML = `
@@ -308,10 +307,9 @@
         <div class="row"><div class="k">Lon</div><div class="v">${Number(f.lon).toFixed(4)}</div></div>
         <div class="row"><div class="k">Heading</div><div class="v">${f.heading}°</div></div>
         <div class="row"><div class="k">Altitude</div><div class="v">${f.altitude} ft</div></div>
-        <div class="row"><div class="k">Speed</div><div class="v">${f.speed} kts</div></div>
-      `;
+        <div class="row"><div class="k">Speed</div><div class="v">${f.speed} kts</div></div>`;
     }
-
+//=====================================飛機航向姿態控制======================================
     const lastPosMap = new Map();
     const animMap = new Map();
 
@@ -358,7 +356,7 @@
       animMap.set(key, id);
     }
 
-    // ===== 載入 + 更新飛機 =====
+    // ============================ 載入 + 更新飛機====================================
     async function loadFlights() {
       try {
         const res = await fetch(API_URL);
@@ -436,11 +434,69 @@
 	    await loadFlights();  
 	  } finally {
 	    isLoading = false;
+		allFlights = flights;
+		 applySearch();
 	  }
 	}
 	
 	loadFlightsSafe();
 	setInterval(loadFlightsSafe, 2000);
+	
+	//====================================搜尋航班====================================
+	let allFlights = []; 
+
+	const flightSearchEl = document.getElementById("flightSearch");
+	const flightListEl = document.getElementById("flightList");
+	
+	function renderFlightList(list) {
+	  if (!flightListEl) return;
+
+	  flightListEl.innerHTML = "";
+
+	  if (list.length === 0) {
+	    flightListEl.innerHTML = `<div style="color:#888;">No flights</div>`;
+	    return;
+	  }
+
+	  for (const f of list) {
+	    const btn = document.createElement("button");
+	    btn.type = "button";
+	    btn.textContent = f.flightNum;
+
+	    // 點擊航班
+	    btn.addEventListener("click", () => {
+	      selectedFlightNum = f.flightNum;
+
+	      // 若你有右側資訊卡，這裡可以接
+	      // updateSelectedCard(f);
+
+	      // 地圖聚焦（可留）
+	      if (Number.isFinite(f.lat) && Number.isFinite(f.lon)) {
+	        map.setView([f.lat, f.lon], Math.max(map.getZoom(), 11));
+	      }
+	    });
+
+	    flightListEl.appendChild(btn);
+	  }
+	}
+
+	// 套用搜尋條件
+	function applySearch() {
+	  const kw = (flightSearchEl?.value || "").trim().toUpperCase();
+
+	  const filtered = allFlights.filter(f => {
+	    const fn = String(f.flightNum || "").toUpperCase();
+	    if (!kw) return true;
+	    return fn.includes(kw); // 想更嚴格可改 startsWith
+	  });
+
+	  renderFlightList(filtered);
+	}
+
+	// 綁定搜尋事件
+	if (flightSearchEl) {
+	  flightSearchEl.addEventListener("input", applySearch);
+	}
 	
 	</script>
 
