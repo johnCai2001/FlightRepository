@@ -121,7 +121,12 @@
 	  padding:5px 8px;
 	  margin-bottom:6px;
 	}
-
+	.keywordBox {
+	  display: flex;
+	  flex-direction: column; /* ← 關鍵 */
+	  gap: 6px;
+	  margin-bottom: 8px;
+	}
 	.tableWrap{
 	  border:1px solid #ccc;
 	  border-radius:6px;
@@ -194,31 +199,22 @@
 	     autocomplete="off"
 	     style="
 	     "/>
-	  <div id="flightList"></div>
+		 
 
-	  <!--航班表-->	  
+	  <!--航班表-->
 	  <div class="tableWrap">
 	    <table class="flightTable">
-			<thead>
+	      <thead>
 	        <tr>
-	          <th>Flight Number</th>
+	          <th>Flights Number</th>
 	        </tr>
 	      </thead>
-		  <tbody>
-		    <tr th:each="f : ${flightNumbers}">
-				<td>
-				 <button type="button"
-				              class="flightBtn"
-				              th:attr="data-flightnum=${f}"
-				              th:text="${f}">
-				   </button>
-				 </td>
-		    </tr>
-		  </tbody>
+	      <tbody id="flightTbody">
+	      </tbody>
 	    </table>
-	  </div>	 		  
+	  </div>
+	  <div id="flightList"  class="keywordBox"></div>
     </section>
-
     <section id="map"></section>
 
     <aside class="card" id="flightCard">
@@ -278,7 +274,7 @@
 	  `;
 	  }
    //==================================================================================
-    //去文件中去取得<div>中的flightinfo，預設值為(0))
+    //去文件中去取得<div>中的flightinfo
     const flightInfoEl = document.getElementById("flightInfo");
     let selectedFlightNum = null;
 
@@ -404,9 +400,9 @@
 
           if (selectedFlightNum === key) renderFlightCard(f);
         }
+		
 		allFlights = flights;
 		applySearch();
-
         // DELETE
         for (const [key, marker] of markerMap.entries()) {
           if (!seen.has(key)) {
