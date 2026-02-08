@@ -229,6 +229,7 @@
   <script>
     // 初始化地圖
     const map = L.map("map").setView([25.0777, 121.2328], 10);
+	const trackMap = new Map();
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
       maxZoom: 19
@@ -365,7 +366,6 @@
 
         const data = await res.json();
         const flights = Array.isArray(data) ? data : (data.flights ?? data.data ?? []);
-
         const seen = new Set();
 
         for (const f of flights) {
@@ -380,7 +380,7 @@
           seen.add(key);
 
           if (!markerMap.has(key)) {
-            // CREATE
+            
             const marker = L.marker([lat, lon], { icon: createPlaneIcon(heading) }).addTo(map);
 
             marker.bindTooltip(key, { permanent: true, direction: "top" });
