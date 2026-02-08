@@ -186,12 +186,17 @@
   <main class="layout">
     <section class="panel" id="flightPanel">
       <h3>Flights</h3>
-
-      <input id="flightSearch" placeholder="Search FlightNumber">
-	  
+  <!--搜尋框-->
+	  <input
+	     id="flightSearch"
+	     type="text"
+	     placeholder="Search flightNumber"
+	     autocomplete="off"
+	     style="
+	     "/>
 	  <div id="flightList"></div>
 
-	  <!--航班號表-->	  
+	  <!--航班表-->	  
 	  <div class="tableWrap">
 	    <table class="flightTable">
 			<thead>
@@ -246,7 +251,7 @@
 
 	  selectedFlightNum = flightNum;
 
-	  // 1) 拉最新 flights
+	  //拉最新 flights
 	  const res = await fetch(API_URL);
 	  const flights = await res.json();
 
@@ -386,7 +391,7 @@
 
             marker.on("click", () => {
               selectedFlightNum = key;
-              renderFlightCard(f);
+              renderFlightCard(f);   
             });
 
             markerMap.set(key, marker);
@@ -399,6 +404,8 @@
 
           if (selectedFlightNum === key) renderFlightCard(f);
         }
+		allFlights = flights;
+		applySearch();
 
         // DELETE
         for (const [key, marker] of markerMap.entries()) {
@@ -411,8 +418,6 @@
             markerMap.delete(key);
           }
         }
-
-        // 第一次自動縮放
         if (!didFitBounds && markerMap.size > 0) {
           const group = L.featureGroup([...markerMap.values()]);
           map.fitBounds(group.getBounds().pad(0.3));
@@ -422,8 +427,60 @@
         console.error("loadFlights error:", e);
       }
     }
+	
+	//=======================================搜尋航班===========================================
+	let allFlights = []; 
 
-	//3-5更新位置優化
+		const flightSearchEl = document.getElementById("flightSearch");
+		const flightListEl = document.getElementById("flightList");
+		
+		function renderFlightList(list) {
+		  if (!flightListEl) return;
+
+		  flightListEl.innerHTML = "";
+
+		  if (list.length === 0) {
+		    flightListEl.innerHTML = `<div style="color:#888;">No flights</div>`;
+		    return;
+		  }
+
+		  for (const f of list) {
+		    const btn = document.createElement("button");
+		    btn.type = "button";
+		    btn.textContent = f.flightNum;
+
+		    // 點擊航班
+		    btn.addEventListener("click", () => {
+		      selectedFlightNum = f.flightNum;
+
+		      if (Number.isFinite(f.lat) && Number.isFinite(f.lon)) {
+		        map.setView([f.lat, f.lon], Math.max(map.getZoom(), 11));
+		      }
+		    });
+
+		    flightListEl.appendChild(btn);
+		  }
+		}
+
+		// 套用搜尋條件
+		function applySearch() {
+		  const kw = (flightSearchEl?.value || "").trim().toUpperCase();
+
+		  const filtered = allFlights.filter(f => {
+		    const fn = String(f.flightNum|| "").toUpperCase();
+		    if (!kw) return true;
+		    return fn.includes(kw);
+		  });
+
+		  renderFlightList(filtered);
+		}
+
+		// 綁定搜尋事件
+		if (flightSearchEl) {
+		  flightSearchEl.addEventListener("input", applySearch);
+		}
+		
+	//================================更新位置優化=========================================
 	let isLoading = false;
 
 	async function loadFlightsSafe() {
@@ -434,69 +491,13 @@
 	    await loadFlights();  
 	  } finally {
 	    isLoading = false;
-		allFlights = flights;
-		 applySearch();
 	  }
 	}
 	
 	loadFlightsSafe();
 	setInterval(loadFlightsSafe, 2000);
 	
-	//====================================搜尋航班====================================
-	let allFlights = []; 
-
-	const flightSearchEl = document.getElementById("flightSearch");
-	const flightListEl = document.getElementById("flightList");
-	
-	function renderFlightList(list) {
-	  if (!flightListEl) return;
-
-	  flightListEl.innerHTML = "";
-
-	  if (list.length === 0) {
-	    flightListEl.innerHTML = `<div style="color:#888;">No flights</div>`;
-	    return;
-	  }
-
-	  for (const f of list) {
-	    const btn = document.createElement("button");
-	    btn.type = "button";
-	    btn.textContent = f.flightNum;
-
-	    // 點擊航班
-	    btn.addEventListener("click", () => {
-	      selectedFlightNum = f.flightNum;
-
-	      // 若你有右側資訊卡，這裡可以接
-	      // updateSelectedCard(f);
-
-	      // 地圖聚焦（可留）
-	      if (Number.isFinite(f.lat) && Number.isFinite(f.lon)) {
-	        map.setView([f.lat, f.lon], Math.max(map.getZoom(), 11));
-	      }
-	    });
-
-	    flightListEl.appendChild(btn);
-	  }
-	}
-
-	// 套用搜尋條件
-	function applySearch() {
-	  const kw = (flightSearchEl?.value || "").trim().toUpperCase();
-
-	  const filtered = allFlights.filter(f => {
-	    const fn = String(f.flightNum || "").toUpperCase();
-	    if (!kw) return true;
-	    return fn.includes(kw); // 想更嚴格可改 startsWith
-	  });
-
-	  renderFlightList(filtered);
-	}
-
-	// 綁定搜尋事件
-	if (flightSearchEl) {
-	  flightSearchEl.addEventListener("input", applySearch);
-	}
+	//====================================搜尋航班===========================================
 	
 	</script>
 
