@@ -230,6 +230,12 @@
     // 初始化地圖
     const map = L.map("map").setView([25.0777, 121.2328], 10);
 	const trackMap = new Map();
+	const lastPosMap = new Map();
+	const animMap = new Map();
+	const markerMap = new Map();
+	const animStateMap = new Map();
+    let didFitBounds = false;
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
       maxZoom: 19
@@ -279,10 +285,7 @@
     const flightInfoEl = document.getElementById("flightInfo");
     let selectedFlightNum = null;
 
-    const markerMap = new Map();
-	const animStateMap = new Map();
-    let didFitBounds = false;
-
+   
     // =======================================建立飛機======================================
     function createPlaneIcon(heading) {
       return L.divIcon({
@@ -312,8 +315,7 @@
         <div class="row"><div class="k">Speed</div><div class="v">${f.speed} kts</div></div>`;
     }
 //=====================================飛機航向姿態控制======================================
-    const lastPosMap = new Map();
-    const animMap = new Map();
+  
 
     function lerp(a, b, t) {
       return a + (b - a) * t;
@@ -384,16 +386,33 @@
             const marker = L.marker([lat, lon], { icon: createPlaneIcon(heading) }).addTo(map);
 
             marker.bindTooltip(key, { permanent: true, direction: "top" });
-
             marker.on("click", () => {
               selectedFlightNum = key;
               renderFlightCard(f);   
+			  
             });
-
             markerMap.set(key, marker);
             lastPosMap.set(key, { lat, lon, heading });
+			const latlngs = [[lat, lon]];
+	        const polyline = L.polyline(latlngs, {
+		    weight: 2,
+			  opacity: 0.8
+			  }).addTo(map);
+			trackMap.set(key, { latlngs, polyline });
+
           } else {
-            // UPDATE
+			
+			const track = trackMap.get(key);
+			if (track) {
+			  track.latlngs.push([lat, lon]);
+
+			  if (track.latlngs.length > 50) {
+			    track.latlngs.shift();
+			  }
+
+			  track.polyline.setLatLngs(track.latlngs);
+			}
+
             const marker = markerMap.get(key);
             smoothMoveMarker(key, marker, lat, lon, heading);
           }
