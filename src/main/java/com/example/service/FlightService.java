@@ -7,14 +7,16 @@ import java.util.Random;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import com.example.dto.FlightStateDto;
+import com.example.integration.opensky.OpenSkyModel;
 
 @EnableScheduling
 //記得要加enable不然資料不會動!!!
 @Service
 public class FlightService {
 
-    private final List<FlightStateDto> flights = new ArrayList<>();
+    private volatile List<FlightStateDto> flights = new ArrayList<>();
     private final Random random = new Random();
 
     private static final double EARTH_RADIUS_M = 6_371_000.0;
@@ -72,5 +74,29 @@ public class FlightService {
             // 取得航班所有資訊
             public List<FlightStateDto> getFlights() {
            return flights;
-    }
+        } 
+            
+            public void updateFromOpenSky(List<OpenSkyModel> models) {
+
+                List<FlightStateDto> next = new ArrayList<>();
+
+                for (OpenSkyModel m : models) {
+
+                    int heading = (int) Math.round(m.heading);
+                    int altitude = (int) Math.round(m.altitudeFt); // ft
+                    int speed = (int) Math.round(m.speedKt);       // kt
+
+                    next.add(new FlightStateDto(
+                        m.callsign,   // flightNum
+                        m.lat,
+                        m.lon,
+                        heading,
+                        altitude,
+                        speed
+                    ));
+                }
+                flights = next;
+                System.out.println("updateFromOpenSky => " + next.size());
+            }
+   
 }

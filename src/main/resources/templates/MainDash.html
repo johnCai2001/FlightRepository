@@ -393,15 +393,8 @@
             });
             markerMap.set(key, marker);
             lastPosMap.set(key, { lat, lon, heading });
-			const latlngs = [[lat, lon]];
-	        const polyline = L.polyline(latlngs, {
-		    weight: 2,
-			  opacity: 0.8
-			  }).addTo(map);
-			trackMap.set(key, { latlngs, polyline });
-
           } else {
-			
+ 
 			const track = trackMap.get(key);
 			if (track) {
 			  track.latlngs.push([lat, lon]);
