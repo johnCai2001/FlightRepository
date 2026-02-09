@@ -80,7 +80,23 @@ public class FlightService {
 
                 List<FlightStateDto> next = new ArrayList<>();
 
-             
+                for (OpenSkyModel m : models) {
+
+                    int heading = (int) Math.round(m.heading);
+                    int altitude = (int) Math.round(m.altitudeFt); // ft
+                    int speed = (int) Math.round(m.speedKt);       // kt
+
+                    next.add(new FlightStateDto(
+                        m.callsign,   // flightNum
+                        m.lat,
+                        m.lon,
+                        heading,
+                        altitude,
+                        speed
+                    ));
+                }
+                flights = next;
+                System.out.println("updateFromOpenSky => " + next.size());
             }
    
 }

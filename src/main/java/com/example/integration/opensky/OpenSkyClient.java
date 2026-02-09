@@ -30,7 +30,6 @@ public class OpenSkyClient {
     private String cachedToken;
     private Instant expireAt = Instant.EPOCH;
 
-    /** 取得 Bearer token（自動快取） */
     private synchronized String getToken() {
         if (cachedToken != null && Instant.now().isBefore(expireAt.minusSeconds(60))) {
             return cachedToken;
