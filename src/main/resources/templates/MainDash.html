@@ -183,7 +183,7 @@
 <body>
   <header>
     <h1>✈️ Flight Main Dashboard</h1>
-    <div class="muted">Phase 3-2：後端 API → 地圖 marker</div>
+    <div class="muted">地圖 marker</div>
   </header>
    
   
@@ -196,9 +196,7 @@
 	     id="flightSearch"
 	     type="text"
 	     placeholder="Search flightNumber"
-	     autocomplete="off"
-	     style="
-	     "/>
+	     autocomplete="off"/>
 		 
 
 	  <!--航班表-->
@@ -227,7 +225,7 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    // 初始化地圖
+    // 初始化地圖(中心點)
     const map = L.map("map").setView([25.0777, 121.2328], 10);
 	const trackMap = new Map();
 	const lastPosMap = new Map();
@@ -258,10 +256,10 @@
 	  const res = await fetch(API_URL);
 	  const flights = await res.json();
 
-	  // 2) 找到被點的那台
-	  const f = flights.find(x => x.flightNum === flightNum);
+	  // 找到被點的那台
+	  const f = flights.find(x => x.flightNum ==flightNum);
 	  if (!f) {
-	    flightInfoEl.textContent = `找不到 ${flightNum}（可能剛好不在資料裡）`;
+	    flightInfoEl.textContent = `找不到 ${flightNum}`;
 	    return;
 	  }
 
@@ -283,9 +281,9 @@
    //==================================================================================
     //去文件中去取得<div>中的flightinfo
     const flightInfoEl = document.getElementById("flightInfo");
-    let selectedFlightNum = null;
+   //沒選之前初始值是=0
+	let selectedFlightNum = null;
 
-   
     // =======================================建立飛機======================================
     function createPlaneIcon(heading) {
       return L.divIcon({
@@ -303,7 +301,7 @@
       });
     }
 
-    // =================================更新右側資訊卡=====================================
+    // =================================更新右側資訊框=====================================
     function renderFlightCard(f) {
       if (!flightInfoEl) return;
       flightInfoEl.innerHTML = `
@@ -316,7 +314,6 @@
     }
 //=====================================飛機航向姿態控制======================================
   
-
     function lerp(a, b, t) {
       return a + (b - a) * t;
     }
@@ -338,10 +335,15 @@
       const start = performance.now();
 
       function step(now) {
+		
+		//插值計算方法
         const t = Math.min(1, (now - start) / duration);
-
+       
+		// 位置插值
         const lat = lerp(from.lat, toLat, t);
         const lon = lerp(from.lon, toLon, t);
+		
+		//方向插值
         const heading = lerpAngle(from.heading, toHeading, t);
 
         marker.setLatLng([lat, lon]);
@@ -361,81 +363,77 @@
     }
 
     // ============================ 載入 + 更新飛機====================================
-    async function loadFlights() {
-      try {
-        const res = await fetch(API_URL);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	async function loadFlights() {
+	  try {
+	    const res = await fetch(API_URL);
+	    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
-        const flights = Array.isArray(data) ? data : (data.flights ?? data.data ?? []);
-        const seen = new Set();
+	    const data = await res.json();
+	    const flights = Array.isArray(data) ? data : (data.flights ?? data.data ?? []);
+	    const seen = new Set();
 
-        for (const f of flights) {
-          const key = f.flightNum;
-          if (!key) continue;
+	    for (const f of flights) {
+	      const key = f.flightNum;
+	      if (!key) continue;
 
-          const lat = Number(f.lat);
-          const lon = Number(f.lon);
-          const heading = Number(f.heading) || 0;
-          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+	      const lat = Number(f.lat);
+	      const lon = Number(f.lon);
+	      const heading = Number(f.heading) || 0;
+	      if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
 
-          seen.add(key);
+	      seen.add(key);
 
-          if (!markerMap.has(key)) {
-            
-            const marker = L.marker([lat, lon], { icon: createPlaneIcon(heading) }).addTo(map);
+	      if (!markerMap.has(key)) {
+	        // CREATE
+	        const marker = L.marker([lat, lon], { icon: createPlaneIcon(heading) }).addTo(map);
 
-            marker.bindTooltip(key, { permanent: true, direction: "top" });
-            marker.on("click", () => {
-              selectedFlightNum = key;
-              renderFlightCard(f);   
-			  
-            });
-            markerMap.set(key, marker);
-            lastPosMap.set(key, { lat, lon, heading });
-          } else {
- 
-			const track = trackMap.get(key);
-			if (track) {
-			  track.latlngs.push([lat, lon]);
+	        marker.bindTooltip(key, { permanent: true, direction: "top" });
 
-			  if (track.latlngs.length > 50) {
-			    track.latlngs.shift();
-			  }
+	        marker.on("click", () => {
+	          selectedFlightNum = key;
+	          renderFlightCard(f);
+	        });
 
-			  track.polyline.setLatLngs(track.latlngs);
-			}
+	        markerMap.set(key, marker);
+	        lastPosMap.set(key, { lat, lon, heading });
+	      } else {
+	        // UPDATE
+	        const marker = markerMap.get(key);
+	        smoothMoveMarker(key, marker, lat, lon, heading);
+	      }
 
-            const marker = markerMap.get(key);
-            smoothMoveMarker(key, marker, lat, lon, heading);
-          }
+	      if (selectedFlightNum === key) renderFlightCard(f);
+	    }
 
-          if (selectedFlightNum === key) renderFlightCard(f);
-        }
-		
-		allFlights = flights;
-		applySearch();
-        // DELETE
-        for (const [key, marker] of markerMap.entries()) {
-          if (!seen.has(key)) {
-            if (animMap.has(key)) cancelAnimationFrame(animMap.get(key));
-            animMap.delete(key);
-            lastPosMap.delete(key);
+	    // 給搜尋 / 列表用
+	    allFlights = flights;
 
-            map.removeLayer(marker);
-            markerMap.delete(key);
-          }
-        }
-        if (!didFitBounds && markerMap.size > 0) {
-          const group = L.featureGroup([...markerMap.values()]);
-          map.fitBounds(group.getBounds().pad(0.3));
-          didFitBounds = true;
-        }
-      } catch (e) {
-        console.error("loadFlights error:", e);
-      }
-    }
-	
+	    //只在真的需要時才套用搜尋
+	    applySearch();
+
+	    // DELETE 消失的飛機
+	    for (const [key, marker] of markerMap.entries()) {
+	      if (!seen.has(key)) {
+	        if (animMap.has(key)) cancelAnimationFrame(animMap.get(key));
+	        animMap.delete(key);
+	        lastPosMap.delete(key);
+
+	        map.removeLayer(marker);
+	        markerMap.delete(key);
+	      }
+	    }
+
+	    if (!didFitBounds && markerMap.size > 0) {
+	      const group = L.featureGroup([...markerMap.values()]);
+	      map.fitBounds(group.getBounds().pad(0.3));
+	      didFitBounds = true;
+	    }
+	  } catch (e) {
+	    console.error("loadFlights error:", e);
+	  }
+	}
+
+
 	//=======================================搜尋航班===========================================
 	let allFlights = []; 
 
