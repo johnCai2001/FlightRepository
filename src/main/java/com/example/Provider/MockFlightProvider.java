@@ -21,8 +21,8 @@ public class MockFlightProvider {
     private static final double KNOT_TO_MPS = 0.514444;
 
     public  List<FlightStateDto>  getFlight() {
-        flights.add(new FlightStateDto("AB123", 25.0777, 121.2328, 90, 32000, 450));  // heading=90 東
-        flights.add(new FlightStateDto("CD456", 25.12,   121.18,   270, 28000, 430));  // heading=270 西
+        //flights.add(new FlightStateDto("AB123", 25.0777, 121.2328, 90, 32000, 450));  // heading=90 東
+        //flights.add(new FlightStateDto("CD456", 25.12,   121.18,   270, 28000, 430));  // heading=270 西
     return  flights ;
     }
    

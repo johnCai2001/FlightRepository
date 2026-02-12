@@ -8,22 +8,28 @@ import org.springframework.stereotype.Service;
 
 import com.example.Provider.MockFlightProvider;
 import com.example.dto.FlightStateDto;
+import com.example.integration.opensky.OpenSkyClient;
 import com.example.integration.opensky.OpenSkyModel;
 
 
 @Service
 public class FlightService {
+
+    private final OpenSkyClient openSkyClient;
+    
+    private volatile List<FlightStateDto> flights = new ArrayList<>();
 	
 	@Autowired	
-	private final MockFlightProvider mock;
+	private  MockFlightProvider mock;
 
-	  public FlightService(MockFlightProvider mock) {
+	  public FlightService(MockFlightProvider mock, OpenSkyClient openSkyClient) {
 	    this.mock = mock;
+	    this.openSkyClient = openSkyClient;
 	  }
 	  
     // 取得航班所有資訊
     public List<FlightStateDto> getFlights() {
-   return  mock.getFlight();
+   return flights;
     }
     
     public List<String> getFlightNumbers() {
@@ -49,7 +55,8 @@ public class FlightService {
                 speed
             ));
         }
+        this.flights=next;
         System.out.println("updateFromOpenSky => " + next.size());
     }
-   
+ 
 }
