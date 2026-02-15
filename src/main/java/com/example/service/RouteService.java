@@ -10,7 +10,7 @@ import com.example.dto.RouteDto;
 @Service
 public class RouteService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private static final RestTemplate restTemplate = new RestTemplate();
 
     public RouteDto getRoute(String icao24) {
         if (icao24 == null || icao24.isBlank()) return null;
