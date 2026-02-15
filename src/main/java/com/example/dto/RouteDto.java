@@ -37,5 +37,5 @@ public class RouteDto {
 		this.departureCity = departureCity;
 		this.arrivalCity = arrivalCity;
 	}
-   
+	public RouteDto() {}
 }
