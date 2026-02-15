@@ -4,21 +4,50 @@ package com.example.dto;
 public class FlightStateDto {
 	
 		private String flightNum;
-	   
 	    private double lat;
-	    
 	    private double lon;
-	    
 	    private int heading;
-	    
 	    private int altitude;
-	    
 	    private int speed;
 	    private String departurecity; 
 	    private String arrivalcity;
-	    
-	    private String departureAirport;  // 出發機場代碼 (TPE)
+	    private String departureAirport; 
 	    private String arrivalAirport; 
+	    private String icao24;
+
+	    
+		public FlightStateDto(String flightNum, double lat, double lon, int heading, int altitude, int speed,
+				String departurecity, String arrivalcity, String departureAirport, String arrivalAirport,
+				String icao24) {
+			super();
+			this.flightNum = flightNum;
+			this.lat = lat;
+			this.lon = lon;
+			this.heading = heading;
+			this.altitude = altitude;
+			this.speed = speed;
+			this.departurecity = departurecity;
+			this.arrivalcity = arrivalcity;
+			this.departureAirport = departureAirport;
+			this.arrivalAirport = arrivalAirport;
+			this.icao24 = icao24;
+		}
+
+		public String getDeparturecity() {
+			return departurecity;
+		}
+
+		public void setDeparturecity(String departurecity) {
+			this.departurecity = departurecity;
+		}
+
+		public String getIcao24() {
+			return icao24;
+		}
+
+		public void setIcao24(String icao24) {
+			this.icao24 = icao24;
+		}
 
 		public String getDepaturecity() {
 			return departurecity;

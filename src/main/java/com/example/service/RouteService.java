@@ -13,37 +13,54 @@ public class RouteService {
 
     public RouteDto getRoute(String icao24) {
         if (icao24 == null || icao24.isBlank()) return null;
-
         long now = System.currentTimeMillis() / 1000;
-        long begin = now - 48 * 3600;
-        long end = now;
+
+	     long begin = now - 36 * 3600;
+	     long end = now;
+		 long dayBegin = begin / 86400;
+		 long dayEnd = end / 86400;
+		 if (dayEnd - dayBegin >= 2) {
+		   begin = now - 23 * 3600;
+		 }
 
         String url = "https://opensky-network.org/api/flights/aircraft"
                 + "?icao24=" + icao24
                 + "&begin=" + begin
                 + "&end=" + end;
 
-        ResponseEntity<OpenSkyFlight[]> response =
-                restTemplate.getForEntity(url, OpenSkyFlight[].class);
+        
+        try {
 
-        OpenSkyFlight[] flights = response.getBody();
-        if (flights == null || flights.length == 0) return null;
+            ResponseEntity<OpenSkyFlight[]> response =
+                    restTemplate.getForEntity(url, OpenSkyFlight[].class);
 
-        // 從後面找第一筆起降都有值的（比 flights[flights.length-1] 穩）
-        OpenSkyFlight latest = null;
-        for (int i = flights.length - 1; i >= 0; i--) {
-            OpenSkyFlight f = flights[i];
-            if (f.getEstDepartureAirport() != null && f.getEstArrivalAirport() != null) {
-                latest = f;
-                break;
+            OpenSkyFlight[] flights = response.getBody();
+            if (flights == null || flights.length == 0) {
+                return null;
             }
-        }
-        if (latest == null) return null;
 
-        RouteDto dto = new RouteDto();
-        dto.departureAirport = latest.getEstDepartureAirport();
-        dto.arrivalAirport = latest.getEstArrivalAirport();
-        return dto;
+            OpenSkyFlight latest = null;
+            for (int i = flights.length - 1; i >= 0; i--) {
+                OpenSkyFlight f = flights[i];
+                if (f.getEstDepartureAirport() != null &&
+                    f.getEstArrivalAirport() != null) {
+                    latest = f;
+                    break;
+                }
+            }
+
+            if (latest == null) {
+                return null;
+            }
+
+            RouteDto dto = new RouteDto();
+            dto.departureAirport = latest.getEstDepartureAirport();
+            dto.arrivalAirport = latest.getEstArrivalAirport();
+            return dto;
+
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+
+            return null;
+        }
     }
 }
-

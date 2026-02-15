@@ -30,7 +30,9 @@ public class FlightAPIController {
 		return 	flightService.getFlights();
 		    }
 	@GetMapping("/route")
-    public  RouteDto route(@RequestParam String icao24) {
-		return routeservice.getRoute(icao24);
+    public Object route(@RequestParam String icao24) {
+		if(icao24==null||icao24.isBlank()) return "missing icao24";
+		RouteDto dto= routeservice.getRoute(icao24);
+		return (dto==null) ? "no data" : dto;
        }
 	}

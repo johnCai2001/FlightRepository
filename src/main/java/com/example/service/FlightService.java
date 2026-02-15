@@ -43,21 +43,21 @@ public class FlightService {
         for (OpenSkyModel m : models) {
 
             int heading = (int) Math.round(m.heading);
-            int altitude = (int) Math.round(m.altitudeFt); // ft
-            int speed = (int) Math.round(m.speedKt);       // kt
-            next.add(new FlightStateDto(
-            	    m.callsign,
-            	    m.lat,
-            	    m.lon,
-            	    heading,
-            	    altitude,
-            	    speed,
-            	    "TPE",       // departureAirport
-            	    "KIX",       // arrivalAirport
-            	    "Taipei",    // departureCity
-            	    "Osaka"      // arrivalCity
-            	));
+            int altitude = (int) Math.round(m.altitudeFt);
+            int speed = (int) Math.round(m.speedKt);
+
+            FlightStateDto dto = new FlightStateDto();
+
+            dto.setFlightNum(m.callsign);
+            dto.setLat(m.lat);
+            dto.setLon(m.lon);
+            dto.setHeading(heading);
+            dto.setAltitude(altitude);
+            dto.setSpeed(speed);
+            dto.setIcao24(m.icao24);
+            next.add(dto);
         }
+
         this.flights=next;
         System.out.println("updateFromOpenSky => " + next.size());
     }
