@@ -302,16 +302,31 @@
     }
 
     // =================================更新右側資訊框=====================================
-    function renderFlightCard(f) {
-      if (!flightInfoEl) return;
-      flightInfoEl.innerHTML = `
-        <div class="row"><div class="k">Flight</div><div class="v">${f.flightNum}</div></div>
-        <div class="row"><div class="k">Lat</div><div class="v">${Number(f.lat).toFixed(4)}</div></div>
-        <div class="row"><div class="k">Lon</div><div class="v">${Number(f.lon).toFixed(4)}</div></div>
-        <div class="row"><div class="k">Heading</div><div class="v">${f.heading}°</div></div>
-        <div class="row"><div class="k">Altitude</div><div class="v">${f.altitude} ft</div></div>
-        <div class="row"><div class="k">Speed</div><div class="v">${f.speed} kts</div></div>`;
-    }
+	function renderFlightCard(f) {
+	  if (!flightInfoEl) return;
+
+	  flightInfoEl.innerHTML = `
+	    <div class="row"><div class="k">Flight</div><div class="v">${f.flightNum}</div></div>
+
+	    <div class="row"><div class="k">Route</div>
+	      <div class="v">
+	        ${f.departureAirport ?? "-"} → ${f.arrivalAirport ?? "-"}
+	      </div>
+	    </div>
+
+	    <div class="row"><div class="k">City</div>
+	      <div class="v">
+	        ${f.departurecity ?? "-"} → ${f.arrivalcity ?? "-"}
+	      </div>
+	    </div>
+
+	    <div class="row"><div class="k">Lat</div><div class="v">${Number(f.lat).toFixed(4)}</div></div>
+	    <div class="row"><div class="k">Lon</div><div class="v">${Number(f.lon).toFixed(4)}</div></div>
+	    <div class="row"><div class="k">Heading</div><div class="v">${f.heading}°</div></div>
+	    <div class="row"><div class="k">Altitude</div><div class="v">${f.altitude} ft</div></div>
+	    <div class="row"><div class="k">Speed</div><div class="v">${f.speed} kts</div></div>
+	  `;
+	}
 //=====================================飛機航向姿態控制======================================
   
     function lerp(a, b, t) {

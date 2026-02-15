@@ -45,15 +45,18 @@ public class FlightService {
             int heading = (int) Math.round(m.heading);
             int altitude = (int) Math.round(m.altitudeFt); // ft
             int speed = (int) Math.round(m.speedKt);       // kt
-
             next.add(new FlightStateDto(
-                m.callsign,   // flightNum
-                m.lat,
-                m.lon,
-                heading,
-                altitude,
-                speed
-            ));
+            	    m.callsign,
+            	    m.lat,
+            	    m.lon,
+            	    heading,
+            	    altitude,
+            	    speed,
+            	    "TPE",       // departureAirport
+            	    "KIX",       // arrivalAirport
+            	    "Taipei",    // departureCity
+            	    "Osaka"      // arrivalCity
+            	));
         }
         this.flights=next;
         System.out.println("updateFromOpenSky => " + next.size());
