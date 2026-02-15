@@ -3,7 +3,6 @@ package com.example.service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import com.example.dto.OpenSkyFlight;
 import com.example.dto.RouteDto;
 
