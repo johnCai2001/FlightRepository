@@ -8,6 +8,6 @@ public class OpenSkyModel {
     public double heading;
     public double altitudeFt;
     public double speedKt;
-
+    public String icao24;
 }
 

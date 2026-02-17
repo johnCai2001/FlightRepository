@@ -6,6 +6,24 @@ public class RouteDto {
     public String arrivalAirport;
     public String departureCity;
     public String arrivalCity;
+    public String icao24;
+    
+    
+	public RouteDto(String departureAirport, String arrivalAirport, String departureCity, String arrivalCity,
+			String icao24) {
+		super();
+		this.departureAirport = departureAirport;
+		this.arrivalAirport = arrivalAirport;
+		this.departureCity = departureCity;
+		this.arrivalCity = arrivalCity;
+		this.icao24 = icao24;
+	}
+	public String getIcao24() {
+		return icao24;
+	}
+	public void setIcao24(String icao24) {
+		this.icao24 = icao24;
+	}
 	public String getDepartureAirport() {
 		return departureAirport;
 	}

@@ -15,7 +15,11 @@ public class FlightStateDto {
 	    private String arrivalAirport; 
 	    private String icao24;
 
-	    
+		public FlightStateDto() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
 		public FlightStateDto(String flightNum, double lat, double lon, int heading, int altitude, int speed,
 				String departurecity, String arrivalcity, String departureAirport, String arrivalAirport,
 				String icao24) {
