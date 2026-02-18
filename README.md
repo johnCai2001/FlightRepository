@@ -13,12 +13,27 @@ The system provides a dashboard-style interface where users can:
 5.Switch between mock and real flight data sources
 
 Used  technics:
+
+
 BACKEND
-Java 21
+Java 
 Spring Boot
 RESTful API Design
 @Scheduled Task Execution
 DTO Pattern
 Dependency Injection
 Mock Provider Pattern
-MVC Architecture
+
+
+FORNTEND
+HTML
+CSS Grid Layout
+JavaScript 
+Async
+Fetch API
+Leaflet.js
+Asynchronous data fetching
+Marker lifecycle management
+Map collections
+UI synchronization with backend state
+MVC 
