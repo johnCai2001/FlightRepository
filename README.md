@@ -8,10 +8,17 @@ Real-Time Flight Tracking System built with Spring Boot & Leaflet.js
 </p>
 
 ## MainDash view
+
+<p align="center">
+  <img src="./images/getinmainadash.png" width="900"/>
+</p>
+
+
 <p align="center">
   <img src="./images/maindash.png" width="900"/>
 </p>
 
+## introudction
 The system provides a dashboard-style interface where users can:
 1.View active flights on a map/
 
