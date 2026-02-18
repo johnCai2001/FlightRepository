@@ -1,5 +1,16 @@
-project Flight Dashboard
+Project Flight Dashboard
 Real-Time Flight Tracking System built with Spring Boot & Leaflet.js
+
+## Dashboard View
+
+<p align="center">
+  <img src="./images/dashboard.png" width="900"/>
+</p>
+
+## MainDash view
+<p align="center">
+  <img src="./images/maindash.png" width="900"/>
+</p>
 
 The system provides a dashboard-style interface where users can:
 1.View active flights on a map/
@@ -12,10 +23,9 @@ The system provides a dashboard-style interface where users can:
 
 5.Switch between mock and real flight data sources
 
-Used  technics:
+## Used  technics:
 
-
-BACKEND
+## BACKEND
 Java /
 Spring Boot/
 RESTful API Design/
@@ -25,7 +35,7 @@ Dependency Injection/
 Mock Provider Pattern
 
 
-FORNTEND
+## FORNTEND
 HTML
 CSS Grid Layout/
 JavaScript /
@@ -39,7 +49,7 @@ UI synchronization with backend state/
 MVC 
 
 
-project structures
+## project structures
 src/main/java/com.example
 ── controller    # REST API & Page Controllers/
 ── service       # Business Logic Layer/
@@ -49,7 +59,7 @@ src/main/java/com.example
 ── scheduler     # Scheduled Flight Updates/
 ── config        # Global Configuration
 
-Future Improvements
+## Future Improvements
 WebSocket real-time streaming/
 Database persistence/
 Cloud deployment (AWS / GCP)/
