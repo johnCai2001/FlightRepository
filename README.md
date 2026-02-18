@@ -41,13 +41,13 @@ MVC
 
 project structures
 src/main/java/com.example
-├── controller    # REST API & Page Controllers
-├── service       # Business Logic Layer
-├── dto           # Data Transfer Objects
-├── integration   # External API (OpenSky) Integration
-├── provider      # Mock Data Provider
-├── scheduler     # Scheduled Flight Updates
-├── config        # Global Configuration
+── controller    # REST API & Page Controllers/
+── service       # Business Logic Layer/
+── dto           # Data Transfer Objects/
+── integration   # External API (OpenSky) Integration/
+── provider      # Mock Data Provider/
+── scheduler     # Scheduled Flight Updates/
+── config        # Global Configuration
 
 
 
