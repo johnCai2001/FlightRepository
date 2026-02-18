@@ -49,5 +49,12 @@ src/main/java/com.example
 ── scheduler     # Scheduled Flight Updates/
 ── config        # Global Configuration
 
+Future Improvements
+WebSocket real-time streaming/
+Database persistence/
+Cloud deployment (AWS / GCP)/
+User authentication/
+Historical flight replay mode
+
 
 
