@@ -46,8 +46,8 @@ public class FlightService {
             int altitude = (int) Math.round(m.altitudeFt);
             int speed = (int) Math.round(m.speedKt);
 
+            
             FlightStateDto dto = new FlightStateDto();
-
             dto.setFlightNum(m.callsign);
             dto.setLat(m.lat);
             dto.setLon(m.lon);
