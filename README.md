@@ -18,6 +18,11 @@ Real-Time Flight Tracking System built with Spring Boot & Leaflet.js
   <img src="./images/maindash.png" width="900"/>
 </p>
 
+<p align="center">
+  <img src="./images/Flightcard.png" width="900"/>
+</p>
+
+
 ## introudction
 The system provides a dashboard-style interface where users can:
 
