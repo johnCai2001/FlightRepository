@@ -73,13 +73,14 @@ public class FlightService {
             FlightMetaEntity m = metaMap.get(f.getFlightNum().trim());
             if (m == null) continue;
 
+            //fake airline
             if (m.getAirline() != null) {
-                f.setAirlineName(m.getAirline().getName());
-                f.setAirlineIcao(m.getAirline().getIcao());
+               f.setAirlineName("China Airline");
             }
+            //fake aircraft
             if (m.getAircraftType() != null) {
                 f.setAircraftType(m.getAircraftType().getIcaoType());
-                f.setAircraftModel(m.getAircraftType().getModel());
+                f.setAircraftType("B777-300ER");
             }
         }
         return flights;
@@ -103,6 +104,8 @@ public class FlightService {
             dto.setAltitude(altitude);
             dto.setSpeed(speed);
             dto.setIcao24(m.icao24);
+            dto.setAircraftType("B777-300ER");
+            dto.setAirlineName("China Airline");
 
             next.add(dto);
         }
