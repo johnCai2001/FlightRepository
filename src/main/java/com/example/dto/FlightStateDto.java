@@ -15,9 +15,41 @@ public class FlightStateDto {
 	    private String arrivalAirport; 
 	    private String icao24;
 	    private String airlineName;     // 航空公司名稱
-	    private String airlineIcao;     // 航空公司 ICAO (例如 EVA)
+	    private String airlineIcao;     // 航空公司 
 	    private String aircraftType;    // 例如 A320
 	    private String aircraftModel;   // 例如 A320-200
+
+		public String getAirlineName() {
+			return airlineName;
+		}
+
+		public void setAirlineName(String airlineName) {
+			this.airlineName = airlineName;
+		}
+
+		public String getAirlineIcao() {
+			return airlineIcao;
+		}
+
+		public void setAirlineIcao(String airlineIcao) {
+			this.airlineIcao = airlineIcao;
+		}
+
+		public String getAircraftType() {
+			return aircraftType;
+		}
+
+		public void setAircraftType(String aircraftType) {
+			this.aircraftType = aircraftType;
+		}
+
+		public String getAircraftModel() {
+			return aircraftModel;
+		}
+
+		public void setAircraftModel(String aircraftModel) {
+			this.aircraftModel = aircraftModel;
+		}
 
 		public FlightStateDto() {
 			super();
