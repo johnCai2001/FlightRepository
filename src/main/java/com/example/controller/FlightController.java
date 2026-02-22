@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.dto.FlightStateDto;
 import com.example.service.FlightService;
 
 @Controller
@@ -27,12 +28,15 @@ public class FlightController {
 
 	@GetMapping("/dashboard")
 	public String dashboard(Model model) {
+
 	  List<String> flightNumbers = flightService.getFlightNumbers();
 	  model.addAttribute("flightNumbers", flightNumbers);
-	  System.out.println("flightNumbers => " + flightNumbers);
+
+	  List<FlightStateDto> flights = flightService.getFlightsWithMeta();
+	  model.addAttribute("flights", flights);
+
 	  return "MainDash";
 	}
-
 
 	         }
 	

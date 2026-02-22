@@ -21,59 +21,71 @@ import com.example.integration.opensky.OpenSkyModel;
 @Service
 public class FlightService {
 
-    private final OpenSkyClient openSkyClient;
-    
-    private  List<FlightStateDto> flights = new ArrayList<>();
-    
-    private FlightMetaRepository  flightMetaRepo;
-	
-	@Autowired	
-	private  MockFlightProvider mock;
+    private List<FlightStateDto> flights = new ArrayList<>();
 
-	  public FlightService(MockFlightProvider mock, OpenSkyClient openSkyClient) {
-	    this.mock = mock;
-	    this.openSkyClient = openSkyClient;
-	  }
-	  
-    // 取得航班所有資訊
-	  public List<FlightStateDto> getFlights() {
-		   List<FlightStateDto> flights = mock.getFlight();
-		    	return flights;
-	  }
-	  // 取得航班號
-    public List<FlightStateDto> getFlightNumbers() {
-    // 收集 flightNum
-    List<String> nums = flights.stream()
-        .map(FlightStateDto::getFlightNum)
-        .filter(Objects::nonNull)
-        .distinct()
-        .collect(Collectors.toList());
-    // DB 一次查回來
-    List<FlightMetaEntity> metas = flightMetaRepo.findAllByFlightNumInFetch(nums);
+    @Autowired
+    private MockFlightProvider mock;
 
-    // 做成 Map: flightNum -> meta
-    Map<String, FlightMetaEntity> metaMap = new HashMap<>();
-    for (FlightMetaEntity m : metas) {
-      metaMap.put(m.getFlightNum(), m);
+    @Autowired
+    private FlightMetaRepository flightMetaRepo;
+
+    public List<FlightStateDto> getFlights() {
+    	  return flights;
+    	}
+
+    public List<String> getFlightNumbers() {
+    	  return flights.stream()
+    	      .map(FlightStateDto::getFlightNum)
+    	      .filter(Objects::nonNull)
+    	      .map(String::trim)
+    	      .filter(s -> !s.isEmpty())
+    	      .distinct()
+    	      .collect(Collectors.toList());
+    	}
+
+    public List<FlightStateDto> getFlightsWithMeta() {
+
+        // 1) 收集 flightNum
+        List<String> nums = flights.stream()
+                .map(FlightStateDto::getFlightNum)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (nums.isEmpty()) return flights;
+
+        // 2) DB 一次查回來
+        List<FlightMetaEntity> metas = flightMetaRepo.findAllByFlightNumInFetch(nums);
+
+        // 3) flightNum -> meta
+        Map<String, FlightMetaEntity> metaMap = new HashMap<>();
+        for (FlightMetaEntity m : metas) {
+            if (m.getFlightNum() != null) {
+                metaMap.put(m.getFlightNum().trim(), m);
+            }
+        }
+
+        for (FlightStateDto f : flights) {
+            if (f.getFlightNum() == null) continue;
+
+            FlightMetaEntity m = metaMap.get(f.getFlightNum().trim());
+            if (m == null) continue;
+
+            if (m.getAirline() != null) {
+                f.setAirlineName(m.getAirline().getName());
+                f.setAirlineIcao(m.getAirline().getIcao());
+            }
+            if (m.getAircraftType() != null) {
+                f.setAircraftType(m.getAircraftType().getIcaoType());
+                f.setAircraftModel(m.getAircraftType().getModel());
+            }
+        }
+        return flights;
     }
 
-    // 填回 DTO（有查到才填，沒查到就空）
-    for (FlightStateDto f : flights) {
-      FlightMetaEntity m = metaMap.get(f.getFlightNum());
-      if (m == null) continue;
-
-      if (m.getAirline() != null) {
-        f.setAirlineName(m.getAirline().getName());
-        f.setAirlineIcao(m.getAirline().getIcao());
-      }
-      if (m.getAircraftType() != null) {
-        f.setAircraftType(m.getAircraftType().getIcaoType());
-        f.setAircraftModel(m.getAircraftType().getModel());
-      }
-    }
-    return flights;
-    }
-   public void updateFromOpenSky(List<OpenSkyModel> models) {
+    public void updateFromOpenSky(List<OpenSkyModel> models) {
 
         List<FlightStateDto> next = new ArrayList<>();
 
@@ -84,16 +96,18 @@ public class FlightService {
             int speed = (int) Math.round(m.speedKt);
 
             FlightStateDto dto = new FlightStateDto();
-            dto.setFlightNum(m.callsign);
+            dto.setFlightNum(m.callsign == null ? null : m.callsign.trim()); // ✅ trim 很重要
             dto.setLat(m.lat);
             dto.setLon(m.lon);
             dto.setHeading(heading);
             dto.setAltitude(altitude);
             dto.setSpeed(speed);
             dto.setIcao24(m.icao24);
+
             next.add(dto);
         }
-        this.flights=next;
+
+        this.flights = next;
         System.out.println("updateFromOpenSky => " + next.size());
-      }
+    }
 }
