@@ -301,16 +301,25 @@
 
     // =================================更新右側資訊框=====================================
 	function renderFlightCard(f) {
-		if (!flightInfoEl) return;
+	  if (!flightInfoEl) return;
 	  flightInfoEl.innerHTML = `
 	    <div class="row"><div class="k">Flight</div><div class="v">${f.flightNum}</div></div>
-
+	    <div class="row">
+	      <div class="k">Airline</div>
+	      <div class="v">${f.airlineName ?? "-"}</div>
+	    </div>
+	    <div class="row">
+	      <div class="k">Aircraft</div>
+	      <div class="v">
+	        ${f.aircraftType ?? "-"}
+	        ${f.aircraftModel ? " (" + f.aircraftModel + ")" : ""}
+	      </div>
+	    </div>
 	    <div class="row"><div class="k">Route</div>
 	      <div class="v">
 	        ${f.departureAirport ?? "-"} → ${f.arrivalAirport ?? "-"}
 	      </div>
 	    </div>
-
 	    <div class="row"><div class="k">City</div>
 	      <div class="v">
 	        ${f.departurecity ?? "-"} → ${f.arrivalcity ?? "-"}
