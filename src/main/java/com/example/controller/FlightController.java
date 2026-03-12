@@ -34,10 +34,8 @@ public class FlightController {
 
 	  List<FlightStateDto> flights = flightService.getFlightsWithMeta();
 	  model.addAttribute("flights", flights);
-
 	  return "MainDash";
+	    }
 	}
-
-	         }
 	
 

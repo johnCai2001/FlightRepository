@@ -97,7 +97,7 @@ public class FlightService {
             int speed = (int) Math.round(m.speedKt);
 
             FlightStateDto dto = new FlightStateDto();
-            dto.setFlightNum(m.callsign == null ? null : m.callsign.trim()); // ✅ trim 很重要
+            dto.setFlightNum(m.callsign == null ? null : m.callsign.trim());
             dto.setLat(m.lat);
             dto.setLon(m.lon);
             dto.setHeading(heading);
